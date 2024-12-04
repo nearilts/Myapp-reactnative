@@ -7,11 +7,11 @@ const Stack = createNativeStackNavigator();
 
 const App = () => {
   return (
-    // <AuthProvider>
-    // <Navigation />
-    // </AuthProvider>
+    <AuthProvider>
+        <Navigation />
+    </AuthProvider>
 
-    <Navigation />
+    // <Navigation />
   );
 };
 export default App;

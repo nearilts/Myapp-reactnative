@@ -9,16 +9,31 @@ import BottomNavigation from './BottomNavigation';
 import HomeScreen from '../ui/Home/HomeScreen';
 import SidebarNavigation from './SidebarNavigation';
 import HomeDetail from '../ui/Home/HomeDetail';
+import LoginScreen from '../ui/Auth/LoginScreen';
+import RegisterScreen from '../ui/Auth/RegisterScreen';
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
 
-    // const {userInfo} = useContext(AuthContext);
+    const {userInfo} = useContext(AuthContext);
 
   return (
     <NavigationContainer>
       <StatusBar backgroundColor={COLORS.white} barStyle="dark-content" />
       <Stack.Navigator screenOptions={{headerShown: false}}>
+
+
+      {userInfo.access_token  ? (
+          <Stack.Screen name="LoginScreen" component={SidebarNavigation}/>
+        ) :
+        (
+          <Stack.Screen name="LoginScreen" component={LoginScreen}/>
+        )
+      }
+      <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
+
+
+
       <Stack.Screen name="SidebarNavigation" component={SidebarNavigation} />
       <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
       

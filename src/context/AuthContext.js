@@ -13,23 +13,27 @@ export const AuthProvider = ({ children }) => {
   const [splashLoading, setSplashLoading] = useState(false)
 
 
-  const logins = (username, password) => {
+  const logins = (email, password) => {
     setIsLoading(true);
-    console.log('login', `${BASE_URL}login`);
+    console.log('login', `${BASE_URL}api/login`);
 
     axios
-      .post(`${BASE_URL}login`, { username, password})
+      .post(`${BASE_URL}api/login`, { email, password})
       .then((res) => {
-        let userData = res.data;
-        setUserInfo(userData);
-        AsyncStorage.setItem('userInfo', JSON.stringify(userData))
-          .then(() => {
-            setIsLoading(false);
-          })
-          .catch((err) => {
-            alert('Error saving userInfo to AsyncStorage: '+ err)
-            setIsLoading(false);
+        let userData = res.data.data;
+        console.log('response login', userData);
+        if (userData.access_token) {
+          setUserInfo(userData);
+          AsyncStorage.setItem('userInfo', JSON.stringify(userData))
+            .then(() => {
+              setIsLoading(false);
+            })
+            .catch((err) => {
+              alert('Error saving userInfo to AsyncStorage: '+ err)
+              setIsLoading(false);
           });
+        }
+        
       })
       .catch((err) => {
           alert('error login: '+err)
@@ -38,9 +42,39 @@ export const AuthProvider = ({ children }) => {
       });
   };
 
+  const registers = (name,email,phone,city, password,address) => {
+    setIsLoading(true);
+    console.log('login', `${BASE_URL}api/login`);
+
+    axios
+      .post(`${BASE_URL}api/register`, { name,email,phone,city, password,address})
+      .then((res) => {
+        let userData = res.data.data;
+        console.log('response registers', userData);
+        if (userData.access_token) {
+          setUserInfo(userData);
+          AsyncStorage.setItem('userInfo', JSON.stringify(userData))
+            .then(() => {
+              setIsLoading(false);
+            })
+            .catch((err) => {
+              alert('Error saving userInfo to AsyncStorage: '+ err)
+              setIsLoading(false);
+          });
+        }
+        
+      })
+      .catch((err) => {
+          alert('error login: '+err)
+        console.log('error login', err);
+        setIsLoading(false);
+      });
+  };
+
+
   const profils = async (token) => {
       axios
-        .get(`${BASE_URL}user`, {
+        .get(`${BASE_URL}api/user`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -56,26 +90,25 @@ export const AuthProvider = ({ children }) => {
           setIsLoading(false);
         });
     };
-    const logouts = async (navigation) => {
-      setUserInfo({})
-      AsyncStorage.removeItem('userInfo')
+    
+  const logouts = async (navigation) => {
+    setUserInfo({})
+    AsyncStorage.removeItem('userInfo')
 
-      navigation.navigate('LoginScreen');
-    };
+    navigation.navigate('LoginScreen');
+  };
 
-    const isLoggedIn = async () => {
+  const isLoggedIn = async () => {
       try {
         setSplashLoading(true);
     
         let userInfo = await AsyncStorage.getItem('userInfo');
-        console.log('USER', userInfo);
+        console.log('isLoggedIn', userInfo);
     
         if (userInfo) {
           userInfo = JSON.parse(userInfo);
-          console.log('USER (parsed)', userInfo); 
           if (userInfo.access_token) {
             let token = userInfo.access_token.split('|')[1];
-            console.log('CEKKKKK', token); 
             profils(token);
             setUserInfo(userInfo);
           } else {
